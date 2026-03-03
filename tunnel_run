@@ -1,0 +1,14 @@
+#!/bin/bash
+CFG="/root/.tunnelcfg"
+if [[ ! -f "$CFG" ]]; then
+  echo "Error: Konfigurasi tidak ditemukan!"
+  exit 1
+fi
+K=$(cat "$CFG")
+SCRIPT=$(openssl enc -aes-256-cbc -pbkdf2 -d \
+  -in "/root/tunnel.enc" -k "$K" 2>/dev/null)
+if [[ -z "$SCRIPT" ]]; then
+  echo "Error: File tidak valid!"
+  exit 1
+fi
+exec bash <(echo "$SCRIPT") "$@"
